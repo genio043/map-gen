@@ -3,66 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Mapas para Juegos - Genio043 Tools</title>
+    <meta name="description" content="Genera mapas procedurales para mazmorras, paisajes y ciudades. Perfecto para RPGs, roguelikes y juegos de estrategia. ¡Gratis, online y en español 2025!">
+    <meta name="keywords" content="generador de mapas para juegos, crear mazmorras procedurales, mapas aleatorios para RPGs, generador de niveles para juegos, herramienta mapas procedurales, map generator gaming, procedural dungeon generator, game dev map tool, generador de mapas gratis, map generator online 2025">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "¿Qué es un generador de mapas procedurales?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Un generador de mapas procedurales crea mapas aleatorios para juegos, como mazmorras, paisajes o ciudades, usando algoritmos para generar diseños únicos."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "¿Cómo usar el Generador de Mapas para Juegos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Selecciona el tipo de mapa, tamaño y densidad, luego haz clic en 'Generar Mapa' para ver el resultado. Puedes exportar el mapa como PNG para usarlo en tu juego."
+          }
+        }
+      ]
+    }
+    </script>
+    <title>Generador de Mapas para Juegos - Daniel Delgado Tools</title>
     <style>
-        .map-generator {
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1e1e1e;
+            color: #ddd;
+            text-align: center;
+        }
+        h1 { font-size: 28px; color: #00ccff; }
+        h2 { font-size: 20px; color: #00ff99; margin: 10px 0; }
+        .section {
             margin: 20px 0;
+            padding: 15px;
+            background: #2a2a2a;
+            border-radius: 8px;
         }
-        
-        .map-generator label {
-            display: block;
-            margin: 10px 0 5px;
+        .input-group {
+            display: inline-block;
+            margin: 10px;
+            vertical-align: top;
         }
-        
-        .map-generator select, .map-generator button {
+        label { display: block; margin-bottom: 5px; color: #bbb; }
+        input, select {
             padding: 8px;
-            margin-bottom: 10px;
-            width: 100%;
-            max-width: 300px;
+            width: 80px;
+            font-size: 14px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background: #333;
+            color: #fff;
         }
-        
-        #map-canvas {
-            max-width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        button {
+            padding: 10px 20px;
+            background: #00ccff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0099cc; }
+        #resetBtn { background: #ff4444; }
+        #resetBtn:hover { background: #cc3333; }
+        .donate a { color: #00ccff; font-weight: bold; text-decoration: none; }
+        @media (max-width: 500px) {
+            input, select { width: 60px; }
+            .input-group { margin: 5px; }
+            h1 { font-size: 22px; }
+        }
+        canvas {
+            width: 70vw; /* 80% del ancho de la ventana */
+            height: 70vh; /* 80% del alto de la ventana */
+            min-width: 300px; /* No más chico que 300px en pantallas pequeñas */
+            min-height: 300px; /* Alto mínimo para legibilidad */
+            max-width: 1080px; /* Límite superior para pantallas enormes */
+            max-height: 800px; /* Límite superior para no exagerar */
+            margin: 20px auto; /* Centrado con espacio */
+            display: block; /* Evita problemas de inline */
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+        a:visited {
+            color: #ff9900;
+        }
+        footer {
+            background: #2a2a2a;
+            padding: 15px 0px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            border-top: 1px solid #00ccff;
+        }
+        footer p {
+            margin: 0;
+            font-size: 16px;
+            color: #bbb;
+        }
+        footer a {
+            color: #00ff99;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        footer a:hover {
+            color: #1e1e1e;
+            background: #00ff99;
+            padding: 5px 10px;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #00ff99;
         }
     </style>
 </head>
 <body>
-    <div class="layout">
-        <main class="content">
-            <header>
-                <h1>Generador de Mapas para Juegos</h1>
-                <p>Crea mapas procedurales para mazmorras, paisajes, o ciudades. Perfecto para RPGs, roguelikes y juegos de estrategia.</p>
-            </header>
-            <div class="tool-content">
-                <div class="map-generator">
-                    <label for="map-type">Tipo de mapa:</label>
-                    <select id="map-type">
-                        <option value="dungeon">Mazmorra</option>
-                        <option value="landscape">Paisaje</option>
-                        <option value="city">Ciudad</option>
-                    </select>
-                    <label for="map-size">Tamaño del mapa:</label>
-                    <select id="map-size">
-                        <option value="small">Pequeño (20x20)</option>
-                        <option value="medium">Mediano (40x40)</option>
-                        <option value="large">Grande (60x60)</option>
-                    </select>
-                    <label for="density">Densidad:</label>
-                    <select id="density">
-                        <option value="low">Baja</option>
-                        <option value="medium">Media</option>
-                        <option value="high">Alta</option>
-                    </select>
-                    <button onclick="generateMap()">Generar Mapa</button>
-                    <canvas id="map-canvas" style="margin-top: 20px;"></canvas>
-                    <button onclick="exportMap()" style="margin-top: 10px;">Exportar como PNG</button>
-                </div>
-            </div>
-        </main>
+    <h1>Generador de Mapas para Juegos</h1>
+    <p>Crea mapas procedurales para mazmorras, paisajes o ciudades. Perfecto para RPGs, roguelikes y juegos de estrategia.</p>
+    <div class="section">
+        <h2>Configuración</h2>
+        <div class="input-group">
+            <label>Tipo de mapa:</label>
+            <select id="map-type">
+                <option value="dungeon">Mazmorra</option>
+                <option value="landscape">Paisaje</option>
+                <option value="city">Ciudad</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Tamaño del mapa:</label>
+            <select id="map-size">
+                <option value="small">Pequeño (20x20)</option>
+                <option value="medium">Mediano (40x40)</option>
+                <option value="large">Grande (60x60)</option>
+            </select>
+        </div>
+        <div class="input-group">
+            <label>Densidad:</label>
+            <select id="density">
+                <option value="low">Baja</option>
+                <option value="medium">Media</option>
+                <option value="high">Alta</option>
+            </select>
+        </div>
     </div>
-
+    <button onclick="generateMap()">Generar Mapa</button>
+    <button onclick="exportMap()">Exportar como PNG</button>
+    <button id="resetBtn" onclick="resetMap()">Resetear Mapa</button>
+    <canvas id="map-canvas"></canvas>
     <div class="donate">
         <p>¿Te sirvió? <a href="https://buymeacoffee.com/genio043" target="_blank">Cómprame un té :)</a></p>
     </div>
@@ -70,6 +166,81 @@
         <p>Volver a <a href="https://danieldelgado.tech/tools/">Daniel Delgado Tools</a></p>
     </footer>
 
-    <script src="map-generator.js"></script>
-</body>
-</html>
+    <script>
+        function generateMap() {
+            const mapType = document.getElementById("map-type").value;
+            const mapSize = document.getElementById("map-size").value;
+            const density = document.getElementById("density").value;
+
+            let width, height;
+            switch (mapSize) {
+                case "small":
+                    width = height = 20;
+                    break;
+                case "medium":
+                    width = height = 40;
+                    break;
+                case "large":
+                    width = height = 60;
+                    break;
+            }
+
+            const canvas = document.getElementById("map-canvas");
+            canvas.width = width * 10; // Escalar para mejor visibilidad
+            canvas.height = height * 10;
+            const ctx = canvas.getContext("2d");
+
+            // Limpiar el canvas
+            ctx.fillStyle = "#fff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Generar mapa (ejemplo: mazmorra con cellular automata)
+            const map = generateDungeon(width, height, density);
+
+            // Dibujar el mapa
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    ctx.fillStyle = map[y][x] === 1 ? "#000" : "#fff"; // 1 = pared, 0 = suelo
+                    ctx.fillRect(x * 10, y * 10, 10, 10);
+                }
+            }
+        }
+
+        // Algoritmo de cellular automata para generar mazmorras
+        function generateDungeon(width, height, density) {
+            const map = [];
+            let fillPercent;
+
+            switch (density) {
+                case "low":
+                    fillPercent = 0.3;
+                    break;
+                case "medium":
+                    fillPercent = 0.45;
+                    break;
+                case "high":
+                    fillPercent = 0.6;
+                    break;
+            }
+
+            // Inicializar mapa con paredes aleatorias
+            for (let y = 0; y < height; y++) {
+                map[y] = [];
+                for (let x = 0; x < width; x++) {
+                    map[y][x] = Math.random() < fillPercent ? 1 : 0;
+                }
+            }
+
+            // Aplicar reglas de cellular automata (5 iteraciones)
+            for (let i = 0; i < 5; i++) {
+                const newMap = [];
+                for (let y = 0; y < height; y++) {
+                    newMap[y] = [];
+                    for (let x = 0; x < width; x++) {
+                        const wallCount = countWalls(map, x, y, width, height);
+                        newMap[y][x] = wallCount > 4 ? 1 : 0;
+                    }
+                }
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        map
