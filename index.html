@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google-adsense-account" content="ca-pub-0463493221079646">
-    <meta name="description" content="Genera mapas procedurales para mazmorras, paisajes y ciudades. Perfecto para RPGs, roguelikes y juegos de estrategia. ¡Gratis, online y en español 2025!">
+    <meta name="description" content="Generates procedural maps for dungeons, landscapes, and cities. Perfect for RPGs, roguelikes, and strategy games. Free, online, and in English 2025!">
     <meta name="keywords" content="generador de mapas para juegos, crear mazmorras procedurales, mapas aleatorios para RPGs, generador de niveles para juegos, herramienta mapas procedurales, map generator gaming, procedural dungeon generator, game dev map tool, generador de mapas gratis, map generator online 2025">
     <script type="application/ld+json">
     {
@@ -13,24 +13,24 @@
       "mainEntity": [
         {
           "@type": "Question",
-          "name": "¿Qué es un generador de mapas procedurales?",
+          "name": "What is a procedural map generator?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Un generador de mapas procedurales crea mapas aleatorios para juegos, como mazmorras, paisajes o ciudades, usando algoritmos para generar diseños únicos."
+            "text": "A procedural map generator creates random maps for games, such as dungeons, landscapes, or cities, using algorithms to generate unique designs."
           }
         },
         {
           "@type": "Question",
-          "name": "¿Cómo usar el Generador de Mapas para Juegos?",
+          "name": "How to use the Game Map Generator?",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "Selecciona el tipo de mapa, tamaño y densidad, luego haz clic en 'Generar Mapa' para ver el resultado. Puedes exportar el mapa como PNG para usarlo en tu juego."
+            "text": "Select the type of map, size, and density, then click 'Generate Map' to see the result. You can export the map as PNG to use it in your game."
           }
         }
       ]
     }
     </script>
-    <title>Generador de Mapas para Juegos - Genio043 Tools</title>
+    <title>Game Map Generator - Genio043's Tools</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -88,7 +88,7 @@
             min-width: 300px; /* No más chico que 300px en pantallas pequeñas */
             min-height: 300px; /* Alto mínimo para legibilidad */
             max-width: 1080px; /* Límite superior para pantallas enormes */
-            max-height: 800px; /* Límite superior para no exagerar */
+            max-height: 1080px; /* Límite superior para no exagerar */
             margin: 20px auto; /* Centrado con espacio */
             display: block; /* Evita problemas de inline */
             border: 1px solid #444;
@@ -127,46 +127,44 @@
     </style>
 </head>
 <body>
-    <h1>Generador de Mapas para Juegos</h1>
-    <p>Crea mapas procedurales para mazmorras, paisajes o ciudades. Perfecto para RPGs, roguelikes y juegos de estrategia.</p>
+    <h1>Game Map Generator</h1>
+    <p>Create procedural maps for dungeons, landscapes, or cities. Perfect for RPGs, roguelikes, and strategy games.</p>
     <div class="section">
-        <h2>Configuración</h2>
+        <h2>Settings</h2>
         <div class="input-group">
-            <label>Tipo de mapa:</label>
+            <label>Map Type:</label>
             <select id="map-type">
-                <option value="dungeon">Mazmorra</option>
-                <option value="landscape">Paisaje</option>
-                <option value="city">Ciudad</option>
+                <option value="dungeon">Dungeon</option>
+                <option value="landscape">Landscape</option>
+                <option value="city">City</option>
             </select>
         </div>
         <div class="input-group">
-            <label>Tamaño del mapa:</label>
+            <label>Map Size:</label>
             <select id="map-size">
-                <option value="small">Pequeño (20x20)</option>
-                <option value="medium">Mediano (40x40)</option>
-                <option value="large">Grande (60x60)</option>
+                <option value="small">Small (20x20)</option>
+                <option value="medium">Medium (40x40)</option>
+                <option value="large">Large (60x60)</option>
             </select>
         </div>
         <div class="input-group">
-            <label>Densidad:</label>
+            <label>Density:</label>
             <select id="density">
-                <option value="low">Baja</option>
-                <option value="medium">Media</option>
-                <option value="high">Alta</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
             </select>
         </div>
     </div>
-    <button onclick="generateMap()">Generar Mapa</button>
-    <button onclick="exportMap()">Exportar como PNG</button>
-    <button id="resetBtn" onclick="resetMap()">Resetear Mapa</button>
+    <button onclick="generateMap()">Generate Maps</button>
+    <button onclick="exportMap()">Export PNG</button>
+    <button id="resetBtn" onclick="resetMap()">Reset Map</button>
     <canvas id="map-canvas"></canvas>
     <div class="donate">
-        <p>¿Te sirvió? <a href="https://buymeacoffee.com/genio043" target="_blank">Cómprame un té :)</a></p>
+        <p>Did you find this useful? <a href="https://buymeacoffee.com/genio043" target="_blank">Buy me a tea :)</a></p>
     </div>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-0463493221079646" crossorigin="anonymous"></script>
-    <footer>
-        <p>Volver a <a href="https://danieldelgado.tech/tools/">Genio043 Tools</a></p>
-    </footer>
+    <footer><p>Back to <a href="https://genio043.github.io/">Genio043's Tools</a></p></footer>
 
     <script>
         function generateMap() {
