@@ -217,13 +217,14 @@
                         ctx.fillStyle = map[y][x] === 1 ? "#228B22" : "#F5F5DC"; // Bosque verde, suelo beige
                     } else if (mapType === "city") {
                         ctx.fillStyle = map[y][x] === 1 ? "#8B4513" : "#D3D3D3"; // Edificios marrón, calles grises
+                        if (map[y][x] === 2) ctx.fillStyle = "#32CD32"; // Plazas/parques verdes
                     }
                     ctx.fillRect(x * 10, y * 10, 10, 10);
                 }
             }
         }
 
-        // Generador de mazmorras (laberinto estructurado)
+        // Generador de mazmorras (laberinto estructurado con densidad variable)
         function generateDungeon(width, height, density) {
             const map = Array(height).fill().map(() => Array(width).fill(1)); // Todo paredes inicialmente
             const startX = Math.floor(Math.random() * (width - 2)) + 1;
@@ -249,11 +250,33 @@
                 }
             }
 
+            // Ajustar según densidad
+            let roomCount, roomMinSize, roomMaxSize, extraConnections;
+            switch (density) {
+                case "low":
+                    roomCount = Math.floor((width * height) / 200); // Menos habitaciones
+                    roomMinSize = 3;
+                    roomMaxSize = 5;
+                    extraConnections = 0.1; // Pocas conexiones extra
+                    break;
+                case "medium":
+                    roomCount = Math.floor((width * height) / 100); // Habitaciones moderadas
+                    roomMinSize = 3;
+                    roomMaxSize = 6;
+                    extraConnections = 0.3; // Conexiones moderadas
+                    break;
+                case "high":
+                    roomCount = Math.floor((width * height) / 50); // Más habitaciones
+                    roomMinSize = 4;
+                    roomMaxSize = 8;
+                    extraConnections = 0.5; // Muchas conexiones extra
+                    break;
+            }
+
             // Agregar habitaciones (cárceles, plataformas de tortura)
-            const roomCount = Math.floor((width * height) / 100); // Ajustar según tamaño
             for (let i = 0; i < roomCount; i++) {
-                const roomWidth = Math.floor(Math.random() * 4) + 3; // Ancho de 3-6
-                const roomHeight = Math.floor(Math.random() * 4) + 3; // Alto de 3-6
+                const roomWidth = Math.floor(Math.random() * (roomMaxSize - roomMinSize + 1)) + roomMinSize;
+                const roomHeight = Math.floor(Math.random() * (roomMaxSize - roomMinSize + 1)) + roomMinSize;
                 const roomX = Math.floor(Math.random() * (width - roomWidth - 2)) + 1;
                 const roomY = Math.floor(Math.random() * (height - roomHeight - 2)) + 1;
 
@@ -264,10 +287,25 @@
                 }
             }
 
+            // Agregar conexiones extra según densidad
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    if (map[y][x] === 1 && Math.random() < extraConnections) {
+                        const neighbors = [[0, 1], [1, 0], [0, -1], [-1, 0]];
+                        for (const [dx, dy] of neighbors) {
+                            if (map[y + dy][x + dx] === 0) {
+                                map[y][x] = 0; // Conectar con pasillo
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             return map;
         }
 
-        // Generador de paisajes (cellular automata, como antes)
+        // Generador de paisajes (cellular automata, sin cambios)
         function generateLandscape(width, height, density) {
             const map = [];
             let fillPercent;
@@ -284,7 +322,6 @@
                     break;
             }
 
-            // Inicializar mapa con paredes aleatorias
             for (let y = 0; y < height; y++) {
                 map[y] = [];
                 for (let x = 0; x < width; x++) {
@@ -292,7 +329,6 @@
                 }
             }
 
-            // Aplicar reglas de cellular automata (5 iteraciones)
             for (let i = 0; i < 5; i++) {
                 const newMap = [];
                 for (let y = 0; y < height; y++) {
@@ -312,7 +348,7 @@
             return map;
         }
 
-        // Generador de ciudades (cuadrícula estructurada)
+        // Generador de ciudades (cuadrícula con más aleatoriedad)
         function generateCity(width, height, density) {
             const map = Array(height).fill().map(() => Array(width).fill(0)); // Todo calles inicialmente
             let blockSize;
@@ -329,14 +365,51 @@
                     break;
             }
 
-            // Crear calles y bloques
+            // Crear calles y bloques base
             for (let y = 0; y < height; y += blockSize + 1) {
                 for (let x = 0; x < width; x += blockSize + 1) {
-                    // Rellenar bloques de edificios
-                    for (let by = y; by < Math.min(y + blockSize, height); by++) {
-                        for (let bx = x; bx < Math.min(x + blockSize, width); bx++) {
-                            if (Math.random() < 0.8) { // 80% de probabilidad de edificio
+                    const randWidth = Math.floor(Math.random() * 2) + blockSize; // Variar ancho
+                    const randHeight = Math.floor(Math.random() * 2) + blockSize; // Variar alto
+                    for (let by = y; by < Math.min(y + randHeight, height); by++) {
+                        for (let bx = x; bx < Math.min(x + randWidth, width); bx++) {
+                            if (Math.random() < 0.7) { // 70% de probabilidad de edificio
                                 map[by][bx] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Unir parcelas aleatoriamente
+            for (let y = 0; y < height - blockSize; y += blockSize + 1) {
+                for (let x = 0; x < width - blockSize; x += blockSize + 1) {
+                    if (Math.random() < 0.3) { // 30% de probabilidad de unir parcelas
+                        const maxY = Math.min(y + blockSize * 2 + 1, height);
+                        const maxX = Math.min(x + blockSize * 2 + 1, width);
+                        for (let by = y; by < maxY; by++) {
+                            for (let bx = x; bx < maxX; bx++) {
+                                if (Math.random() < 0.7) {
+                                    map[by][bx] = 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Agregar plazas/parques (áreas circulares)
+            const parkCount = Math.floor((width * height) / 200); // Ajustar según tamaño
+            for (let i = 0; i < parkCount; i++) {
+                const radius = Math.floor(Math.random() * 3) + 2; // Radio de 2-4
+                const centerX = Math.floor(Math.random() * (width - radius * 2)) + radius;
+                const centerY = Math.floor(Math.random() * (height - radius * 2)) + radius;
+
+                for (let y = centerY - radius; y <= centerY + radius; y++) {
+                    for (let x = centerX - radius; x <= centerX + radius; x++) {
+                        if (x >= 0 && x < width && y >= 0 && y < height) {
+                            const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+                            if (distance <= radius) {
+                                map[y][x] = 2; // 2 representa plazas/parques
                             }
                         }
                     }
