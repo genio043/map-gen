@@ -349,10 +349,10 @@
         }
 
         // Generador de ciudades (cuadrícula con menos uniones y plazas ajustadas)
-        function generateCity(width, height, density) {
+       function generateCity(width, height, density) {
             const map = Array(height).fill().map(() => Array(width).fill(0)); // Todo calles inicialmente
             let blockSize;
-
+        
             switch (density) {
                 case "low":
                     blockSize = 6; // Bloques más grandes
@@ -364,14 +364,14 @@
                     blockSize = 3; // Bloques pequeños
                     break;
             }
-
+        
             // Contar bloques totales
             const blocksX = Math.floor(width / (blockSize + 1));
             const blocksY = Math.floor(height / (blockSize + 1));
             const totalBlocks = blocksX * blocksY;
             const maxUnions = Math.floor(totalBlocks * 0.3); // Máximo 30% de uniones
             let unions = 0;
-
+        
             // Crear calles y bloques base
             for (let y = 0; y < height; y += blockSize + 1) {
                 for (let x = 0; x < width; x += blockSize + 1) {
@@ -386,7 +386,7 @@
                     }
                 }
             }
-
+        
             // Unir parcelas aleatoriamente (máximo 30%)
             for (let y = 0; y < height - blockSize; y += blockSize + 1) {
                 for (let x = 0; x < width - blockSize; x += blockSize + 1) {
@@ -404,34 +404,30 @@
                     }
                 }
             }
-
+        
             // Agregar plazas/parques (rectangulares, dentro de la cuadrícula)
             let parkCount;
-            switch (mapSize) {
-                case "small":
-                    parkCount = 1; // 1 plaza en mapas pequeños
-                    break;
-                case "medium":
-                    parkCount = Math.floor(Math.random() * 2) + 2; // 2-3 plazas
-                    break;
-                case "large":
-                    parkCount = Math.floor(Math.random() * 4) + 2; // 2-5 plazas
-                    break;
+            if (width === 20 && height === 20) { // Mapa pequeño
+                parkCount = 1;
+            } else if (width === 40 && height === 40) { // Mapa mediano
+                parkCount = Math.floor(Math.random() * 2) + 2; // 2-3 plazas
+            } else { // Mapa grande (60x60)
+                parkCount = Math.floor(Math.random() * 4) + 2; // 2-5 plazas
             }
-
+        
             for (let i = 0; i < parkCount; i++) {
                 const parkWidth = Math.min(blockSize, Math.floor(Math.random() * 2) + blockSize); // Tamaño dentro de cuadrícula
                 const parkHeight = Math.min(blockSize, Math.floor(Math.random() * 2) + blockSize);
                 const parkX = Math.floor(Math.random() * (width - parkWidth - 1) / (blockSize + 1)) * (blockSize + 1);
                 const parkY = Math.floor(Math.random() * (height - parkHeight - 1) / (blockSize + 1)) * (blockSize + 1);
-
+        
                 for (let y = parkY; y < Math.min(parkY + parkHeight, height); y++) {
                     for (let x = parkX; x < Math.min(parkX + parkWidth, width); x++) {
                         map[y][x] = 2; // Plaza/parque
                     }
                 }
             }
-
+        
             return map;
         }
 
