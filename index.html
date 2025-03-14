@@ -194,20 +194,81 @@
             ctx.fillStyle = "#fff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Generar mapa (ejemplo: mazmorra con cellular automata)
-            const map = generateDungeon(width, height, density);
+            // Generar mapa según el tipo
+            let map;
+            switch (mapType) {
+                case "dungeon":
+                    map = generateDungeon(width, height, density);
+                    break;
+                case "landscape":
+                    map = generateLandscape(width, height, density);
+                    break;
+                case "city":
+                    map = generateCity(width, height, density);
+                    break;
+            }
 
             // Dibujar el mapa
             for (let y = 0; y < height; y++) {
                 for (let x = 0; x < width; x++) {
-                    ctx.fillStyle = map[y][x] === 1 ? "#000" : "#fff"; // 1 = pared, 0 = suelo
+                    if (mapType === "dungeon") {
+                        ctx.fillStyle = map[y][x] === 1 ? "#555" : "#ddd"; // Paredes grises, suelo claro
+                    } else if (mapType === "landscape") {
+                        ctx.fillStyle = map[y][x] === 1 ? "#228B22" : "#F5F5DC"; // Bosque verde, suelo beige
+                    } else if (mapType === "city") {
+                        ctx.fillStyle = map[y][x] === 1 ? "#8B4513" : "#D3D3D3"; // Edificios marrón, calles grises
+                    }
                     ctx.fillRect(x * 10, y * 10, 10, 10);
                 }
             }
         }
 
-        // Algoritmo de cellular automata para generar mazmorras
+        // Generador de mazmorras (laberinto estructurado)
         function generateDungeon(width, height, density) {
+            const map = Array(height).fill().map(() => Array(width).fill(1)); // Todo paredes inicialmente
+            const startX = Math.floor(Math.random() * (width - 2)) + 1;
+            const startY = Math.floor(Math.random() * (height - 2)) + 1;
+            map[startY][startX] = 0; // Punto de inicio
+
+            const stack = [[startX, startY]];
+            const directions = [[0, 2], [2, 0], [0, -2], [-2, 0]]; // Direcciones para pasillos
+
+            while (stack.length > 0) {
+                const [x, y] = stack.pop();
+                const shuffledDirections = directions.sort(() => Math.random() - 0.5);
+
+                for (const [dx, dy] of shuffledDirections) {
+                    const nx = x + dx;
+                    const ny = y + dy;
+
+                    if (nx > 0 && nx < width - 1 && ny > 0 && ny < height - 1 && map[ny][nx] === 1) {
+                        map[ny][nx] = 0; // Nuevo pasillo
+                        map[y + dy / 2][x + dx / 2] = 0; // Conectar pasillo
+                        stack.push([nx, ny]);
+                    }
+                }
+            }
+
+            // Agregar habitaciones (cárceles, plataformas de tortura)
+            const roomCount = Math.floor((width * height) / 100); // Ajustar según tamaño
+            for (let i = 0; i < roomCount; i++) {
+                const roomWidth = Math.floor(Math.random() * 4) + 3; // Ancho de 3-6
+                const roomHeight = Math.floor(Math.random() * 4) + 3; // Alto de 3-6
+                const roomX = Math.floor(Math.random() * (width - roomWidth - 2)) + 1;
+                const roomY = Math.floor(Math.random() * (height - roomHeight - 2)) + 1;
+
+                for (let y = roomY; y < roomY + roomHeight; y++) {
+                    for (let x = roomX; x < roomX + roomWidth; x++) {
+                        map[y][x] = 0; // Crear habitación
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        // Generador de paisajes (cellular automata, como antes)
+        function generateLandscape(width, height, density) {
             const map = [];
             let fillPercent;
 
@@ -244,6 +305,40 @@
                 for (let y = 0; y < height; y++) {
                     for (let x = 0; x < width; x++) {
                         map[y][x] = newMap[y][x];
+                    }
+                }
+            }
+
+            return map;
+        }
+
+        // Generador de ciudades (cuadrícula estructurada)
+        function generateCity(width, height, density) {
+            const map = Array(height).fill().map(() => Array(width).fill(0)); // Todo calles inicialmente
+            let blockSize;
+
+            switch (density) {
+                case "low":
+                    blockSize = 6; // Bloques más grandes
+                    break;
+                case "medium":
+                    blockSize = 4; // Bloques medianos
+                    break;
+                case "high":
+                    blockSize = 3; // Bloques pequeños
+                    break;
+            }
+
+            // Crear calles y bloques
+            for (let y = 0; y < height; y += blockSize + 1) {
+                for (let x = 0; x < width; x += blockSize + 1) {
+                    // Rellenar bloques de edificios
+                    for (let by = y; by < Math.min(y + blockSize, height); by++) {
+                        for (let bx = x; bx < Math.min(x + blockSize, width); bx++) {
+                            if (Math.random() < 0.8) { // 80% de probabilidad de edificio
+                                map[by][bx] = 1;
+                            }
+                        }
                     }
                 }
             }
