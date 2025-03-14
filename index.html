@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Mapas para Juegos - Genio043 Tools</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="layout">
+        <main class="content">
+            <header>
+                <h1>Generador de Mapas para Juegos</h1>
+                <p>Crea mapas procedurales para mazmorras, paisajes, o ciudades. Perfecto para RPGs, roguelikes y juegos de estrategia.</p>
+            </header>
+            <div class="tool-content">
+                <div class="map-generator">
+                    <label for="map-type">Tipo de mapa:</label>
+                    <select id="map-type">
+                        <option value="dungeon">Mazmorra</option>
+                        <option value="landscape">Paisaje</option>
+                        <option value="city">Ciudad</option>
+                    </select>
+                    <label for="map-size">Tamaño del mapa:</label>
+                    <select id="map-size">
+                        <option value="small">Pequeño (20x20)</option>
+                        <option value="medium">Mediano (40x40)</option>
+                        <option value="large">Grande (60x60)</option>
+                    </select>
+                    <label for="density">Densidad:</label>
+                    <select id="density">
+                        <option value="low">Baja</option>
+                        <option value="medium">Media</option>
+                        <option value="high">Alta</option>
+                    </select>
+                    <button onclick="generateMap()">Generar Mapa</button>
+                    <canvas id="map-canvas" style="margin-top: 20px;"></canvas>
+                    <button onclick="exportMap()" style="margin-top: 10px;">Exportar como PNG</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div class="donate">
+        <p>¿Te sirvió? <a href="https://buymeacoffee.com/genio043" target="_blank">Cómprame un té :)</a></p>
+    </div>
+    <footer>
+        <p>Volver a <a href="https://danieldelgado.tech/tools/">Daniel Delgado Tools</a></p>
+    </footer>
+
+    <script src="map-generator.js"></script>
+</body>
+</html>
