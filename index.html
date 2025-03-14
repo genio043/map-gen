@@ -351,56 +351,53 @@
         // Generador de ciudades (cuadrícula con menos uniones y plazas ajustadas)
        function generateCity(width, height, density) {
             const map = Array(height).fill().map(() => Array(width).fill(0)); // Todo calles inicialmente
-            let blockSize;
+            let streetSpacing, buildingChance;
         
+            // Ajustar espaciado de calles y probabilidad de edificios según densidad
             switch (density) {
                 case "low":
-                    blockSize = 6; // Bloques más grandes
+                    streetSpacing = 6; // Calles más separadas
+                    buildingChance = 0.2; // 20% de probabilidad de edificio por celda
                     break;
                 case "medium":
-                    blockSize = 4; // Bloques medianos
+                    streetSpacing = 5; // Calles intermedias
+                    buildingChance = 0.4; // 40% de probabilidad de edificio por celda
                     break;
                 case "high":
-                    blockSize = 3; // Bloques pequeños
+                    streetSpacing = 4; // Calles más juntas
+                    buildingChance = 0.6; // 60% de probabilidad de edificio por celda
                     break;
             }
         
-            // Contar bloques totales
-            const blocksX = Math.floor(width / (blockSize + 1));
-            const blocksY = Math.floor(height / (blockSize + 1));
-            const totalBlocks = blocksX * blocksY;
-            const maxUnions = Math.floor(totalBlocks * 0.3); // Máximo 30% de uniones
-            let unions = 0;
-        
-            // Crear calles y bloques base
-            for (let y = 0; y < height; y += blockSize + 1) {
-                for (let x = 0; x < width; x += blockSize + 1) {
-                    const randWidth = Math.floor(Math.random() * 2) + blockSize; // Variar ancho
-                    const randHeight = Math.floor(Math.random() * 2) + blockSize; // Variar alto
-                    for (let by = y; by < Math.min(y + randHeight, height); by++) {
-                        for (let bx = x; bx < Math.min(x + randWidth, width); bx++) {
-                            if (Math.random() < 0.7) { // 70% de probabilidad de edificio
-                                map[by][bx] = 1;
-                            }
-                        }
-                    }
+            // Crear calles horizontales y verticales
+            for (let y = 0; y < height; y += streetSpacing) {
+                for (let x = 0; x < width; x++) {
+                    map[y][x] = 0; // Calles horizontales
+                }
+            }
+            for (let x = 0; x < width; x += streetSpacing) {
+                for (let y = 0; y < height; y++) {
+                    map[y][x] = 0; // Calles verticales
                 }
             }
         
-            // Unir parcelas aleatoriamente (máximo 30%)
-            for (let y = 0; y < height - blockSize; y += blockSize + 1) {
-                for (let x = 0; x < width - blockSize; x += blockSize + 1) {
-                    if (unions < maxUnions && Math.random() < 0.3) { // 30% de probabilidad, hasta límite
-                        const maxY = Math.min(y + blockSize * 2 + 1, height);
-                        const maxX = Math.min(x + blockSize * 2 + 1, width);
-                        for (let by = y; by < maxY; by++) {
-                            for (let bx = x; bx < maxX; bx++) {
-                                if (Math.random() < 0.7) {
-                                    map[by][bx] = 1;
+            // Colocar bloques de edificios entre las calles
+            for (let y = 0; y < height - 1; y += streetSpacing) {
+                for (let x = 0; x < width - 1; x += streetSpacing) {
+                    const blockWidth = Math.min(streetSpacing - 1, Math.floor(Math.random() * 3) + 1); // Ancho 1-3
+                    const blockHeight = Math.min(streetSpacing - 1, Math.floor(Math.random() * 3) + 1); // Alto 1-3
+                    const startX = x + 1; // Dejar espacio para calle
+                    const startY = y + 1;
+        
+                    // Colocar edificio solo si hay espacio y con probabilidad
+                    if (startX + blockWidth < width && startY + blockHeight < height) {
+                        if (Math.random() < buildingChance) {
+                            for (let by = startY; by < startY + blockHeight; by++) {
+                                for (let bx = startX; bx < startX + blockWidth; bx++) {
+                                    map[by][bx] = 1; // Edificio
                                 }
                             }
                         }
-                        unions++;
                     }
                 }
             }
@@ -416,14 +413,16 @@
             }
         
             for (let i = 0; i < parkCount; i++) {
-                const parkWidth = Math.min(blockSize, Math.floor(Math.random() * 2) + blockSize); // Tamaño dentro de cuadrícula
-                const parkHeight = Math.min(blockSize, Math.floor(Math.random() * 2) + blockSize);
-                const parkX = Math.floor(Math.random() * (width - parkWidth - 1) / (blockSize + 1)) * (blockSize + 1);
-                const parkY = Math.floor(Math.random() * (height - parkHeight - 1) / (blockSize + 1)) * (blockSize + 1);
+                const parkWidth = Math.min(streetSpacing - 1, Math.floor(Math.random() * 2) + 2); // Ancho 2-3
+                const parkHeight = Math.min(streetSpacing - 1, Math.floor(Math.random() * 2) + 2); // Alto 2-3
+                const parkX = Math.floor(Math.random() * (width - parkWidth - 1) / streetSpacing) * streetSpacing + 1;
+                const parkY = Math.floor(Math.random() * (height - parkHeight - 1) / streetSpacing) * streetSpacing + 1;
         
-                for (let y = parkY; y < Math.min(parkY + parkHeight, height); y++) {
-                    for (let x = parkX; x < Math.min(parkX + parkWidth, width); x++) {
-                        map[y][x] = 2; // Plaza/parque
+                for (let py = parkY; py < Math.min(parkY + parkHeight, height); py++) {
+                    for (let px = parkX; px < Math.min(parkX + parkWidth, width); px++) {
+                        if (map[py][px] !== 0) { // No sobrescribir calles
+                            map[py][px] = 2; // Plaza/parque
+                        }
                     }
                 }
             }
