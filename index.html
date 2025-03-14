@@ -224,7 +224,7 @@
             }
         }
 
-        // Generador de mazmorras (laberinto estructurado con densidad variable)
+        // Generador de mazmorras (laberinto estructurado con densidad corregida)
         function generateDungeon(width, height, density) {
             const map = Array(height).fill().map(() => Array(width).fill(1)); // Todo paredes inicialmente
             const startX = Math.floor(Math.random() * (width - 2)) + 1;
@@ -250,14 +250,14 @@
                 }
             }
 
-            // Ajustar según densidad
+            // Ajustar según densidad (intercambiando alta y baja)
             let roomCount, roomMinSize, roomMaxSize, extraConnections;
             switch (density) {
-                case "low":
-                    roomCount = Math.floor((width * height) / 200); // Menos habitaciones
-                    roomMinSize = 3;
-                    roomMaxSize = 5;
-                    extraConnections = 0.1; // Pocas conexiones extra
+                case "low": // Ahora alta densidad: más habitaciones y conexiones
+                    roomCount = Math.floor((width * height) / 50); // Más habitaciones
+                    roomMinSize = 4;
+                    roomMaxSize = 8;
+                    extraConnections = 0.5; // Muchas conexiones extra
                     break;
                 case "medium":
                     roomCount = Math.floor((width * height) / 100); // Habitaciones moderadas
@@ -265,11 +265,11 @@
                     roomMaxSize = 6;
                     extraConnections = 0.3; // Conexiones moderadas
                     break;
-                case "high":
-                    roomCount = Math.floor((width * height) / 50); // Más habitaciones
-                    roomMinSize = 4;
-                    roomMaxSize = 8;
-                    extraConnections = 0.5; // Muchas conexiones extra
+                case "high": // Ahora baja densidad: menos habitaciones y conexiones
+                    roomCount = Math.floor((width * height) / 200); // Menos habitaciones
+                    roomMinSize = 3;
+                    roomMaxSize = 5;
+                    extraConnections = 0.1; // Pocas conexiones extra
                     break;
             }
 
@@ -348,7 +348,7 @@
             return map;
         }
 
-        // Generador de ciudades (cuadrícula con más aleatoriedad)
+        // Generador de ciudades (cuadrícula con menos uniones y plazas ajustadas)
         function generateCity(width, height, density) {
             const map = Array(height).fill().map(() => Array(width).fill(0)); // Todo calles inicialmente
             let blockSize;
@@ -365,6 +365,13 @@
                     break;
             }
 
+            // Contar bloques totales
+            const blocksX = Math.floor(width / (blockSize + 1));
+            const blocksY = Math.floor(height / (blockSize + 1));
+            const totalBlocks = blocksX * blocksY;
+            const maxUnions = Math.floor(totalBlocks * 0.3); // Máximo 30% de uniones
+            let unions = 0;
+
             // Crear calles y bloques base
             for (let y = 0; y < height; y += blockSize + 1) {
                 for (let x = 0; x < width; x += blockSize + 1) {
@@ -380,10 +387,10 @@
                 }
             }
 
-            // Unir parcelas aleatoriamente
+            // Unir parcelas aleatoriamente (máximo 30%)
             for (let y = 0; y < height - blockSize; y += blockSize + 1) {
                 for (let x = 0; x < width - blockSize; x += blockSize + 1) {
-                    if (Math.random() < 0.3) { // 30% de probabilidad de unir parcelas
+                    if (unions < maxUnions && Math.random() < 0.3) { // 30% de probabilidad, hasta límite
                         const maxY = Math.min(y + blockSize * 2 + 1, height);
                         const maxX = Math.min(x + blockSize * 2 + 1, width);
                         for (let by = y; by < maxY; by++) {
@@ -393,25 +400,34 @@
                                 }
                             }
                         }
+                        unions++;
                     }
                 }
             }
 
-            // Agregar plazas/parques (áreas circulares)
-            const parkCount = Math.floor((width * height) / 200); // Ajustar según tamaño
-            for (let i = 0; i < parkCount; i++) {
-                const radius = Math.floor(Math.random() * 3) + 2; // Radio de 2-4
-                const centerX = Math.floor(Math.random() * (width - radius * 2)) + radius;
-                const centerY = Math.floor(Math.random() * (height - radius * 2)) + radius;
+            // Agregar plazas/parques (rectangulares, dentro de la cuadrícula)
+            let parkCount;
+            switch (mapSize) {
+                case "small":
+                    parkCount = 1; // 1 plaza en mapas pequeños
+                    break;
+                case "medium":
+                    parkCount = Math.floor(Math.random() * 2) + 2; // 2-3 plazas
+                    break;
+                case "large":
+                    parkCount = Math.floor(Math.random() * 4) + 2; // 2-5 plazas
+                    break;
+            }
 
-                for (let y = centerY - radius; y <= centerY + radius; y++) {
-                    for (let x = centerX - radius; x <= centerX + radius; x++) {
-                        if (x >= 0 && x < width && y >= 0 && y < height) {
-                            const distance = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
-                            if (distance <= radius) {
-                                map[y][x] = 2; // 2 representa plazas/parques
-                            }
-                        }
+            for (let i = 0; i < parkCount; i++) {
+                const parkWidth = Math.min(blockSize, Math.floor(Math.random() * 2) + blockSize); // Tamaño dentro de cuadrícula
+                const parkHeight = Math.min(blockSize, Math.floor(Math.random() * 2) + blockSize);
+                const parkX = Math.floor(Math.random() * (width - parkWidth - 1) / (blockSize + 1)) * (blockSize + 1);
+                const parkY = Math.floor(Math.random() * (height - parkHeight - 1) / (blockSize + 1)) * (blockSize + 1);
+
+                for (let y = parkY; y < Math.min(parkY + parkHeight, height); y++) {
+                    for (let x = parkX; x < Math.min(parkX + parkWidth, width); x++) {
+                        map[y][x] = 2; // Plaza/parque
                     }
                 }
             }
